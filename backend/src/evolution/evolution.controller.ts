@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, Param } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param, Delete } from '@nestjs/common';
 import { EvolutionService } from './evolution.service';
 
 @Controller('evolution')
@@ -13,6 +13,11 @@ export class EvolutionController {
   @Get('instance/:name')
   async getInstance(@Param('name') name: string) {
     return this.evolutionService.getInstance(name);
+  }
+
+  @Delete('instance/:name')
+  async deleteInstance(@Param('name') name: string) {
+    return this.evolutionService.deleteInstance(name);
   }
 
 }

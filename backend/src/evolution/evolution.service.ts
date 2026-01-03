@@ -118,4 +118,47 @@ export class EvolutionService {
       throw error;
     }
   }
+
+  async deleteInstance(name: string) {
+    this.logger.log(`Attempting to delete instance ${name}`);
+    
+    // 1. Delete from Evolution API (Hard delete on provider side to free resources)
+    try {
+        await firstValueFrom(
+            this.httpService.delete(`${this.baseUrl}/instance/delete/${name}`, {
+                headers: {
+                    apikey: this.apiKey
+                }
+            })
+        );
+        this.logger.log(`Instance ${name} deleted from Evolution API`);
+    } catch (error) {
+        this.logger.warn(`Failed to delete instance ${name} from Evolution API: ${error.message}`);
+        // Continue to soft delete locally even if remote delete fails (or already doesn't exist)
+    }
+
+    // 2. Soft Delete in Database (Instance + Embeddings)
+    // We use a transaction to ensure both are updated
+    return this.prisma.$transaction(async (tx) => {
+        const instance = await tx.instance.findUnique({ where: { name } });
+        if (!instance) {
+             throw new Error('Instance not found');
+        }
+
+        // Soft delete embeddings
+        await tx.documentEmbedding.updateMany({
+            where: { instanceId: instance.id },
+            data: { deletedAt: new Date() }
+        });
+
+        // Soft delete instance
+        return tx.instance.update({
+            where: { id: instance.id },
+            data: { 
+                status: 'DELETED',
+                deletedAt: new Date() 
+            }
+        });
+    });
+  }
 }

@@ -37,8 +37,9 @@ model Instance {
   // Relacionamento com Dados Vetorizados (Conhecimento da IA desta instância)
   embeddings DocumentEmbedding[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 
   @@map("instances")
 }
@@ -51,7 +52,8 @@ model DocumentEmbedding {
   vector     Unsupported("vector(1536)")?
   metadata   Json?
 
-  createdAt DateTime @default(now())
+  createdAt DateTime  @default(now())
+  deletedAt DateTime?
 
   @@map("document_embeddings")
 }
