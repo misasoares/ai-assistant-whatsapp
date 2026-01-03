@@ -6,9 +6,8 @@ export class EvolutionController {
   constructor(private readonly evolutionService: EvolutionService) {}
 
   @Post('create-instance')
-  async createInstance(@Body('instanceName') instanceName: string) {
-    const name = instanceName || `instance-${Date.now()}`;
-    return this.evolutionService.createInstance(name);
+  async createInstance(@Body() body: { instanceName: string; customerId: string }) {
+    return this.evolutionService.createInstance(body);
   }
 
   @Get('instance/:name')
@@ -16,13 +15,4 @@ export class EvolutionController {
     return this.evolutionService.getInstance(name);
   }
 
-  @Get('messages/:instanceName')
-  async fetchLastMessages(@Param('instanceName') instanceName: string) {
-    return this.evolutionService.fetchLastMessages(instanceName);
-  }
-
-  @Get('messages/recent/:instanceName')
-  async fetchRecentMessages(@Param('instanceName') instanceName: string) {
-    return this.evolutionService.fetchRecentMessages(instanceName);
-  }
 }

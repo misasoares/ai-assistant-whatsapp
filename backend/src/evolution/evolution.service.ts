@@ -1,7 +1,8 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, ConflictException } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class EvolutionService {
@@ -12,12 +13,24 @@ export class EvolutionService {
   constructor(
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
+    private readonly prisma: PrismaService,
   ) {
     this.baseUrl = this.configService.get<string>('EVOLUTION_API_URL') || 'http://localhost:8080';
     this.apiKey = this.configService.get<string>('EVOLUTION_API_KEY') || '';
   }
 
-  async createInstance(instanceName: string) {
+  async createInstance(data: { instanceName: string; customerId: string }) {
+    const { instanceName, customerId } = data;
+
+    // Check for duplicate locally
+    const existing = await this.prisma.instance.findUnique({
+      where: { name: instanceName },
+    });
+
+    if (existing) {
+      throw new ConflictException('Instance name already exists');
+    }
+
     try {
       this.logger.log(`Attempting to create instance: ${instanceName} at ${this.baseUrl}`);
       const response = await firstValueFrom(
@@ -37,8 +50,19 @@ export class EvolutionService {
         ),
       );
       
-      this.logger.log(`Instance ${instanceName} created successfully`);
-      return response.data;
+      this.logger.log(`Instance ${instanceName} created in Evolution API`);
+
+      // Save to database
+      const instance = await this.prisma.instance.create({
+        data: {
+          name: instanceName,
+          customerId,
+          status: 'DISCONNECTED', // Initial status
+          evolutionKey: response.data?.hash?.apikey, // Assuming Evolution returns API key for the instance if applicable
+        },
+      });
+
+      return { ...response.data, dbInstance: instance };
     } catch (error) {
       const status = error.response?.status;
       const errorData = error.response?.data;
@@ -47,6 +71,11 @@ export class EvolutionService {
       );
       
       if (status) {
+         // Check if it's a conflict in Evolution API but not in our DB (edge case)
+         if (status === 409 || (errorData && errorData.error === 'Instance already exists')) {
+             throw new ConflictException('Instance already exists in Evolution API');
+         }
+
         throw {
           response: {
             status,
@@ -69,160 +98,15 @@ export class EvolutionService {
       );
       return response.data;
     } catch (error) {
+       // Gracefully handle if instance doesn't exist in Evolution but exists in DB (sync issue)
       const status = error.response?.status;
       this.logger.error(
         `Error fetching instance ${instanceName}: Status ${status} - ${error.message}`,
       );
-      if (status) {
-        throw {
-          response: {
-            status,
-            data: error.response?.data
-          }
-        };
+      if (status === 404) {
+         return { instance: { state: 'not_found' } };
       }
-      throw error;
-    }
-  }
-
-  async fetchLastMessages(instanceName: string) {
-    try {
-      this.logger.log(`Fetching last messages for instance: ${instanceName}`);
       
-      // 1. Get most recent chat
-      const chatsResponse = await firstValueFrom(
-        this.httpService.post(
-          `${this.baseUrl}/chat/findChats/${instanceName}`,
-          {},
-          {
-            headers: {
-              apikey: this.apiKey,
-            },
-          },
-        ),
-      );
-
-      const chats = chatsResponse.data;
-      if (!chats || chats.length === 0) {
-        this.logger.log(`No chats found for instance: ${instanceName}`);
-        return [];
-      }
-
-      const mostRecentChat = chats[0];
-      const remoteJid = mostRecentChat.remoteJid;
-      this.logger.log(`Most recent chat: ${remoteJid}`);
-
-      // 2. Get last 5 messages for this chat
-      const messagesResponse = await firstValueFrom(
-        this.httpService.post(
-          `${this.baseUrl}/chat/findMessages/${instanceName}`,
-          {
-            where: {
-              key: {
-                remoteJid: remoteJid,
-              },
-            },
-            offset: 5,
-          },
-          {
-            headers: {
-              apikey: this.apiKey,
-            },
-          },
-        ),
-      );
-
-      return messagesResponse.data.messages?.records || [];
-    } catch (error) {
-      const status = error.response?.status;
-      this.logger.error(
-        `Error fetching last messages for ${instanceName}: Status ${status} - ${error.message}`,
-      );
-      if (status) {
-        throw {
-          response: {
-            status,
-            data: error.response?.data
-          }
-        };
-      }
-      throw error;
-    }
-  }
-
-  async fetchRecentMessages(instanceName: string, chatCount: number = 5, messageCount: number = 5) {
-    try {
-      this.logger.log(`Fetching recent messages for instance: ${instanceName} (chats: ${chatCount}, messages: ${messageCount})`);
-      
-      // 1. Get recent chats
-      const chatsResponse = await firstValueFrom(
-        this.httpService.post(
-          `${this.baseUrl}/chat/findChats/${instanceName}`,
-          {
-            take: chatCount,
-          },
-          {
-            headers: {
-              apikey: this.apiKey,
-            },
-          },
-        ),
-      );
-
-      const chats = chatsResponse.data;
-      if (!chats || !Array.isArray(chats)) {
-        this.logger.log(`No chats found for instance: ${instanceName}`);
-        return [];
-      }
-
-      // 2. For each chat, fetch its last N messages
-      const results = await Promise.all(
-        chats.map(async (chat: any) => {
-          const remoteJid = chat.remoteJid;
-          try {
-            const messagesResponse = await firstValueFrom(
-              this.httpService.post(
-                `${this.baseUrl}/chat/findMessages/${instanceName}`,
-                {
-                  where: {
-                    key: {
-                      remoteJid: remoteJid,
-                    },
-                  },
-                  offset: messageCount,
-                },
-                {
-                  headers: {
-                    apikey: this.apiKey,
-                  },
-                },
-              ),
-            );
-
-            return {
-              user: chat.pushName || remoteJid,
-              remoteJid: remoteJid,
-              profilePicUrl: chat.profilePicUrl,
-              messages: messagesResponse.data.messages?.records || [],
-            };
-          } catch (error) {
-            this.logger.error(`Error fetching messages for chat ${remoteJid}: ${error.message}`);
-            return {
-              user: chat.pushName || remoteJid,
-              remoteJid: remoteJid,
-              profilePicUrl: chat.profilePicUrl,
-              messages: [],
-            };
-          }
-        }),
-      );
-
-      return results;
-    } catch (error) {
-      const status = error.response?.status;
-      this.logger.error(
-        `Error in fetchRecentMessages for ${instanceName}: Status ${status} - ${error.message}`,
-      );
       if (status) {
         throw {
           response: {
