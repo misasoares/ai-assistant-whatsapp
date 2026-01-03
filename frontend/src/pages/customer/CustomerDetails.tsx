@@ -4,6 +4,7 @@ import api from '../../api/axios';
 import { ArrowLeft, Plus, Mail, Phone } from 'lucide-react';
 import InstanceCard from './components/InstanceCard';
 import CreateInstanceModal from './components/CreateInstanceModal';
+import InstanceSettingsModal from './components/InstanceSettingsModal';
 import { Button } from "@/components/ui/button"
 
 interface Instance {
@@ -11,6 +12,9 @@ interface Instance {
   name: string;
   status: string;
   customerName?: string;
+  aiEnabled?: boolean;
+  systemPrompt?: string;
+  silentModeTime?: number;
 }
 
 interface Customer {
@@ -26,6 +30,10 @@ export default function CustomerDetails() {
   const [customer, setCustomer] = useState<Customer | null>(null);
   const [loading, setLoading] = useState(true);
   const [showInstanceModal, setShowInstanceModal] = useState(false);
+  
+  // Settings Modal State
+  const [selectedInstance, setSelectedInstance] = useState<Instance | null>(null);
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
 
   const fetchCustomer = useCallback(async () => {
     try {
@@ -50,6 +58,11 @@ export default function CustomerDetails() {
       console.error('Failed to delete instance', error);
       alert('Failed to delete instance');
     }
+  };
+
+  const handleEditInstance = (instance: Instance) => {
+      setSelectedInstance(instance);
+      setShowSettingsModal(true);
   };
 
   if (loading) return <div className="max-w-7xl mx-auto py-8 px-4 md:px-6">Loading customer data...</div>;
@@ -99,6 +112,7 @@ export default function CustomerDetails() {
               key={instance.id} 
               instance={instance} 
               onDelete={handleDeleteInstance}
+              onSettings={() => handleEditInstance(instance)}
             />
           ))}
           {customer.instances.length === 0 && (
@@ -123,6 +137,15 @@ export default function CustomerDetails() {
         onSuccess={() => {
           setShowInstanceModal(false);
           fetchCustomer();
+        }}
+      />
+
+      <InstanceSettingsModal
+        instance={selectedInstance}
+        open={showSettingsModal}
+        onOpenChange={setShowSettingsModal}
+        onSuccess={() => {
+            fetchCustomer();
         }}
       />
     </div>
