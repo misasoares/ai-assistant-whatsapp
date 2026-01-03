@@ -3,6 +3,7 @@ import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
 import { PrismaService } from '../prisma/prisma.service';
+import { InstanceStatus } from '@prisma/client';
 
 @Injectable()
 export class EvolutionService {
@@ -57,7 +58,7 @@ export class EvolutionService {
         data: {
           name: instanceName,
           customerId,
-          status: 'DISCONNECTED', // Initial status
+          status: InstanceStatus.DISCONNECTED, // Initial status
           evolutionKey: response.data?.hash?.apikey, // Assuming Evolution returns API key for the instance if applicable
         },
       });
@@ -155,7 +156,7 @@ export class EvolutionService {
         return tx.instance.update({
             where: { id: instance.id },
             data: { 
-                status: 'DELETED',
+                status: InstanceStatus.DELETED,
                 deletedAt: new Date() 
             }
         });
