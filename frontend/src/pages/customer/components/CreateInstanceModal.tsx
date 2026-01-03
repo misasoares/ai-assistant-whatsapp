@@ -53,7 +53,7 @@ export default function CreateInstanceModal({ customerId, open, onOpenChange, on
 
     } catch (err: any) {
       console.error(err);
-      setError(err.response?.data?.message || 'Failed to create instance');
+      setError(err.response?.data?.message || 'Falha ao criar instância');
       setLoading(false); // Only stop loading on error, otherwise we wait for QR scan
     }
   };
@@ -105,9 +105,9 @@ export default function CreateInstanceModal({ customerId, open, onOpenChange, on
     }}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>New Instance</DialogTitle>
+          <DialogTitle>Nova Instância</DialogTitle>
           <DialogDescription>
-            {qrCode ? 'Scan the QR Code to connect.' : 'This will create a dedicated WhatsApp instance in Evolution API.'}
+            {qrCode ? 'Escaneie o QR Code para conectar.' : 'Isso criará uma instância dedicada do WhatsApp na Evolution API.'}
           </DialogDescription>
         </DialogHeader>
         
@@ -122,7 +122,7 @@ export default function CreateInstanceModal({ customerId, open, onOpenChange, on
               <div className="grid gap-4 py-4">
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="instanceName" className="text-right">
-                    Name
+                    Nome
                   </Label>
                   <Input
                     id="instanceName"
@@ -136,10 +136,10 @@ export default function CreateInstanceModal({ customerId, open, onOpenChange, on
               </div>
               <DialogFooter>
                 <Button type="button" variant="outline" onClick={handleClose} disabled={loading}>
-                  Cancel
+                  Cancelar
                 </Button>
                 <Button type="submit" disabled={loading}>
-                  {loading ? 'Creating...' : 'Create Instance'}
+                  {loading ? 'Criando...' : 'Criar Instância'}
                 </Button>
               </DialogFooter>
             </form>
@@ -147,9 +147,9 @@ export default function CreateInstanceModal({ customerId, open, onOpenChange, on
             <div className="flex flex-col items-center justify-center p-4">
                  <img src={qrCode} alt="WhatsApp QR Code" className="w-64 h-64 mb-4 border rounded-lg" />
                  <p className="text-sm text-muted-foreground text-center animate-pulse">
-                    Waiting for connection...
+                    Aguardando conexão...
                  </p>
-                 <Button variant="ghost" onClick={handleClose} className="mt-4">Cancel</Button>
+                 <Button variant="ghost" onClick={handleClose} className="mt-4">Cancelar</Button>
             </div>
         )}
       </DialogContent>

@@ -62,15 +62,15 @@ export default function InstanceCard({ instance, onDelete, onSettings }: Instanc
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Delete Instance</AlertDialogTitle>
+                <AlertDialogTitle>Excluir Instância</AlertDialogTitle>
                 <AlertDialogDescription>
-                  Are you sure you want to delete the instance <strong>{instance.name}</strong>? This action will disconnect it and remove it from your list.
+                  Tem certeza de que deseja excluir a instância <strong>{instance.name}</strong>? Esta ação irá desconectá-la e removê-la da sua lista.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogCancel>Cancelar</AlertDialogCancel>
                 <AlertDialogAction onClick={() => onDelete(instance.name)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                  Delete
+                  Excluir
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
@@ -82,10 +82,10 @@ export default function InstanceCard({ instance, onDelete, onSettings }: Instanc
       <CardContent>
         <div className="bg-muted/50 rounded-lg p-3 border border-border/50">
           <h4 className="text-xs font-medium text-muted-foreground flex items-center gap-2 mb-2 uppercase tracking-wider">
-            <Database className="h-3 w-3" /> Knowledge Base
+            <Database className="h-3 w-3" /> Base de Conhecimento
           </h4>
           <div className="text-sm text-center text-muted-foreground py-2">
-            No documents vectorized
+            Nenhum documento vetorizado
           </div>
         </div>
       </CardContent>

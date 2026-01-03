@@ -56,7 +56,7 @@ export default function CustomerDetails() {
       fetchCustomer(); // Refresh list after delete
     } catch (error) {
       console.error('Failed to delete instance', error);
-      alert('Failed to delete instance');
+      alert('Falha ao excluir instância');
     }
   };
 
@@ -65,8 +65,8 @@ export default function CustomerDetails() {
       setShowSettingsModal(true);
   };
 
-  if (loading) return <div className="max-w-7xl mx-auto py-8 px-4 md:px-6">Loading customer data...</div>;
-  if (!customer) return <div className="max-w-7xl mx-auto py-8 px-4 md:px-6">Customer not found</div>;
+  if (loading) return <div className="max-w-7xl mx-auto py-8 px-4 md:px-6">Carregando dados do cliente...</div>;
+  if (!customer) return <div className="max-w-7xl mx-auto py-8 px-4 md:px-6">Cliente não encontrado</div>;
 
   return (
     <div className="max-w-7xl mx-auto py-8 px-4 md:px-6">
@@ -98,11 +98,11 @@ export default function CustomerDetails() {
 
         <div className="flex justify-between items-center pt-6 pb-2 border-b border-border">
           <div className="space-y-1">
-            <h2 className="text-xl font-semibold tracking-tight">Instances</h2>
-            <p className="text-sm text-muted-foreground">Manage WhatsApp instances for this customer.</p>
+            <h2 className="text-xl font-semibold tracking-tight">Instâncias</h2>
+            <p className="text-sm text-muted-foreground">Gerencie as instâncias do WhatsApp para este cliente.</p>
           </div>
           <Button onClick={() => setShowInstanceModal(true)}>
-            <Plus className="mr-2 h-4 w-4" /> New Instance
+            <Plus className="mr-2 h-4 w-4" /> Nova Instância
           </Button>
         </div>
 
@@ -120,10 +120,10 @@ export default function CustomerDetails() {
               <div className="h-12 w-12 rounded-full bg-secondary flex items-center justify-center mb-4">
                  <Plus className="h-6 w-6 text-foreground" />
               </div>
-              <p className="text-lg font-medium">No instances created</p>
-              <p className="text-sm text-muted-foreground mb-4">Get started by creating a new WhatsApp instance.</p>
+              <p className="text-lg font-medium">Nenhuma instância criada</p>
+              <p className="text-sm text-muted-foreground mb-4">Comece criando uma nova instância do WhatsApp.</p>
               <Button variant="outline" onClick={() => setShowInstanceModal(true)}>
-                Create Instance
+                Criar Instância
               </Button>
             </div>
           )}

@@ -85,9 +85,9 @@ export default function CustomerList() {
     <div className="max-w-7xl mx-auto py-8 px-4 md:px-6">
       <div className="flex flex-col items-center md:block md:relative mb-8">
         <div className="text-center">
-          <h1 className="text-3xl font-bold tracking-tight">Customers</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Clientes</h1>
           <p className="text-muted-foreground mt-1">
-            Manage your customers and their WhatsApp instances.
+            Gerencie seus clientes e suas instâncias do WhatsApp.
           </p>
         </div>
         
@@ -95,21 +95,21 @@ export default function CustomerList() {
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
               <Button className="w-full md:w-auto">
-                <Plus className="mr-2 h-4 w-4" /> New Customer
+                <Plus className="mr-2 h-4 w-4" /> Novo Cliente
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
               <DialogHeader>
-                <DialogTitle>Add Customer</DialogTitle>
+                <DialogTitle>Adicionar Cliente</DialogTitle>
                 <DialogDescription>
-                  Create a new customer profile here. Click save when you're done.
+                  Crie um novo perfil de cliente aqui. Clique em salvar quando terminar.
                 </DialogDescription>
               </DialogHeader>
               <form onSubmit={handleCreateCustomer}>
                 <div className="grid gap-4 py-4">
                   <div className="grid grid-cols-4 items-center gap-4">
                     <Label htmlFor="name" className="text-right">
-                      Name
+                      Nome
                     </Label>
                     <Input
                       id="name"
@@ -129,12 +129,12 @@ export default function CustomerList() {
                       value={newCustomerEmail}
                       onChange={(e) => setNewCustomerEmail(e.target.value)}
                       className="col-span-3"
-                      placeholder="Optional"
+                      placeholder="Opcional"
                     />
                   </div>
                   <div className="grid grid-cols-4 items-center gap-4">
                     <Label htmlFor="phone" className="text-right">
-                      Phone
+                      Telefone
                     </Label>
                     <Input
                       id="phone"
@@ -142,13 +142,13 @@ export default function CustomerList() {
                       value={newCustomerPhone}
                       onChange={(e) => setNewCustomerPhone(e.target.value)}
                       className="col-span-3"
-                      placeholder="Optional"
+                      placeholder="Opcional"
                     />
                   </div>
                 </div>
                 <DialogFooter>
                   <Button type="submit" disabled={creating}>
-                    {creating ? 'Saving...' : 'Save changes'}
+                    {creating ? 'Salvando...' : 'Salvar alterações'}
                   </Button>
                 </DialogFooter>
               </form>
@@ -181,7 +181,7 @@ export default function CustomerList() {
                 <CardFooter>
                   <div className="text-xs font-medium flex items-center gap-2 text-muted-foreground">
                     <span className="flex h-2 w-2 rounded-full bg-green-500" />
-                    {customer._count.instances} Active Instances
+                    {customer._count.instances} Instâncias Ativas
                   </div>
                 </CardFooter>
               </Card>
@@ -190,8 +190,8 @@ export default function CustomerList() {
           {customers.length === 0 && (
             <div className="col-span-full flex flex-col items-center justify-center p-12 border-2 border-dashed border-border rounded-lg bg-card/50 text-muted-foreground">
               <Users className="h-10 w-10 mb-4 opacity-50" />
-              <p className="text-lg font-medium">No customers found</p>
-              <p className="text-sm">Create your first customer to get started.</p>
+              <p className="text-lg font-medium">Nenhum cliente encontrado</p>
+              <p className="text-sm">Crie seu primeiro cliente para começar.</p>
             </div>
           )}
         </div>

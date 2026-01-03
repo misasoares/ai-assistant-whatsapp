@@ -60,7 +60,7 @@ export default function InstanceSettingsModal({ instance, open, onOpenChange, on
       onOpenChange(false);
     } catch (err: any) {
       console.error(err);
-      setError('Failed to update settings');
+      setError('Falha ao atualizar configurações');
     } finally {
       setSaving(false);
     }
@@ -70,9 +70,9 @@ export default function InstanceSettingsModal({ instance, open, onOpenChange, on
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
-          <DialogTitle>Instance Settings - {instance?.name}</DialogTitle>
+          <DialogTitle>Configurações da Instância - {instance?.name}</DialogTitle>
           <DialogDescription>
-            Configure AI behavior for this instance.
+            Configure o comportamento da IA para esta instância.
           </DialogDescription>
         </DialogHeader>
 
@@ -84,31 +84,31 @@ export default function InstanceSettingsModal({ instance, open, onOpenChange, on
                 
                 <div className="flex items-center justify-between space-x-2 border p-4 rounded-md">
                     <Label htmlFor="ai-mode" className="flex flex-col space-y-1">
-                        <span>AI Enabled</span>
+                        <span>IA Ativada</span>
                         <span className="font-normal text-xs text-muted-foreground">
-                            When enabled, the AI will reply to messages automatically.
+                            Quando ativado, a IA responderá às mensagens automaticamente.
                         </span>
                     </Label>
                     <Switch id="ai-mode" checked={aiEnabled} onCheckedChange={setAiEnabled} />
                 </div>
 
                 <div className="grid gap-2">
-                    <Label htmlFor="systemPrompt">System Prompt</Label>
+                    <Label htmlFor="systemPrompt">Prompt do Sistema</Label>
                     <Textarea
                         id="systemPrompt"
-                        placeholder="You are a helpful assistant..."
+                        placeholder="Você é um assistente útil..."
                         className="min-h-[100px]"
                         value={systemPrompt}
                         onChange={(e) => setSystemPrompt(e.target.value)}
                     />
                     <p className="text-xs text-muted-foreground">
-                        Define the personality and rules for the AI.
+                        Defina a personalidade e as regras para a IA.
                     </p>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                     <div className="grid gap-2">
-                        <Label htmlFor="silentMode">Silent Mode (Seconds)</Label>
+                        <Label htmlFor="silentMode">Modo Silencioso (Segundos)</Label>
                         <Input
                             id="silentMode"
                             type="number"
@@ -117,7 +117,7 @@ export default function InstanceSettingsModal({ instance, open, onOpenChange, on
                             onChange={(e) => setSilentModeTime(Number(e.target.value))}
                         />
                          <p className="text-xs text-muted-foreground">
-                            Time to wait after human intervention (86400s = 24h).
+                            Tempo de espera após intervenção humana (86400s = 24h).
                         </p>
                     </div>
                 </div>
@@ -127,11 +127,11 @@ export default function InstanceSettingsModal({ instance, open, onOpenChange, on
             </div>
             <DialogFooter>
                 <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-                Cancel
+                Cancelar
                 </Button>
                 <Button type="submit" disabled={saving}>
                 {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                Save Changes
+                Salvar Alterações
                 </Button>
             </DialogFooter>
             </form>
