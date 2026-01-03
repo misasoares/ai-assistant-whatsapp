@@ -2,6 +2,17 @@ import { Trash2, Smartphone, Database, CheckCircle2, XCircle } from 'lucide-reac
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface Instance {
   id: string;
@@ -12,9 +23,10 @@ interface Instance {
 
 interface InstanceCardProps {
   instance: Instance;
+  onDelete: (name: string) => void;
 }
 
-export default function InstanceCard({ instance }: InstanceCardProps) {
+export default function InstanceCard({ instance, onDelete }: InstanceCardProps) {
   const isConnected = instance.status === 'open' || instance.status === 'connected';
   
   return (
@@ -31,9 +43,28 @@ export default function InstanceCard({ instance }: InstanceCardProps) {
                {instance.status.toUpperCase()}
             </Badge>
           </div>
-          <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 -mt-1 -mr-2">
-            <Trash2 className="h-4 w-4" />
-          </Button>
+          
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 -mt-1 -mr-2">
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Delete Instance</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Are you sure you want to delete the instance <strong>{instance.name}</strong>? This action will disconnect it and remove it from your list.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={() => onDelete(instance.name)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                  Delete
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </CardHeader>
       

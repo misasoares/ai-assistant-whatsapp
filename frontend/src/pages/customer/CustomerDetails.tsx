@@ -41,6 +41,16 @@ export default function CustomerDetails() {
     fetchCustomer();
   }, [fetchCustomer]);
 
+  const handleDeleteInstance = async (instanceName: string) => {
+    try {
+      await api.delete(`/evolution/instance/${instanceName}`);
+      fetchCustomer(); // Refresh list after delete
+    } catch (error) {
+      console.error('Failed to delete instance', error);
+      alert('Failed to delete instance');
+    }
+  };
+
   if (loading) return <div className="max-w-7xl mx-auto py-8 px-4 md:px-6">Loading customer data...</div>;
   if (!customer) return <div className="max-w-7xl mx-auto py-8 px-4 md:px-6">Customer not found</div>;
 
@@ -74,7 +84,11 @@ export default function CustomerDetails() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {customer.instances.map((instance) => (
-            <InstanceCard key={instance.id} instance={instance} />
+            <InstanceCard 
+              key={instance.id} 
+              instance={instance} 
+              onDelete={handleDeleteInstance}
+            />
           ))}
           {customer.instances.length === 0 && (
             <div className="col-span-full flex flex-col items-center justify-center p-12 border-2 border-dashed border-border rounded-lg bg-card/50 text-muted-foreground">
