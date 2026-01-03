@@ -5,6 +5,7 @@ import { AppService } from './app.service';
 import { EvolutionModule } from './evolution/evolution.module';
 import { CustomersModule } from './customers/customers.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { MessagesModule } from './messages/messages.module';
 
 @Module({
   imports: [
@@ -13,7 +14,8 @@ import { PrismaModule } from './prisma/prisma.module';
     }),
     EvolutionModule,
     PrismaModule,
-    CustomersModule
+    CustomersModule,
+    MessagesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

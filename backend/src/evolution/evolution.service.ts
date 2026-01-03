@@ -88,6 +88,13 @@ export class EvolutionService {
     }
   }
 
+  async updateInstance(name: string, data: { aiEnabled?: boolean; systemPrompt?: string; silentModeTime?: number }) {
+    return this.prisma.instance.update({
+      where: { name },
+      data,
+    });
+  }
+
   async getInstance(instanceName: string) {
     try {
       const response = await firstValueFrom(
@@ -161,5 +168,32 @@ export class EvolutionService {
             }
         });
     });
+  }
+
+  async sendText(instanceName: string, remoteJid: string, text: string) {
+    try {
+      this.logger.log(`Sending message to ${remoteJid} via ${instanceName}`);
+      const response = await firstValueFrom(
+        this.httpService.post(
+          `${this.baseUrl}/message/sendText/${instanceName}`,
+          {
+            number: remoteJid,
+            text: text,
+          },
+          {
+            headers: {
+              apikey: this.apiKey,
+              'Content-Type': 'application/json',
+            },
+          },
+        ),
+      );
+      return response.data;
+    } catch (error) {
+      this.logger.error(
+        `Error sending message to ${remoteJid}: ${error.message}`,
+      );
+      throw error;
+    }
   }
 }

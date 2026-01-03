@@ -47,13 +47,58 @@ model Instance {
   evolutionKey String?        @map("evolution_key")
   status       InstanceStatus @default(DISCONNECTED)
 
+  // AI Configuration
+  aiEnabled      Boolean @default(false) @map("ai_enabled")
+  systemPrompt   String? @map("system_prompt")
+  silentModeTime Int     @default(86400) @map("silent_mode_time") // in seconds
+
   embeddings DocumentEmbedding[]
+  contacts   Contact[]
+  messages   Message[]
 
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")
   deletedAt DateTime? @map("deleted_at")
 
   @@map("instances")
+}
+
+model Contact {
+  id        String  @id @default(uuid())
+  remoteJid String  @map("remote_jid")
+  name      String?
+  pushName  String? @map("push_name")
+
+  // AI State
+  isBotActive       Boolean   @default(true) @map("is_bot_active")
+  lastInteractionAt DateTime? @map("last_interaction_at")
+
+  instanceId String   @map("instance_id")
+  instance   Instance @relation(fields: [instanceId], references: [id], onDelete: Cascade)
+
+  messages Message[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([instanceId, remoteJid])
+  @@map("contacts")
+}
+
+model Message {
+  id      String @id @default(uuid())
+  content String
+  role    String // user, assistant, system
+
+  contactId String?  @map("contact_id")
+  contact   Contact? @relation(fields: [contactId], references: [id], onDelete: SetNull)
+
+  instanceId String   @map("instance_id")
+  instance   Instance @relation(fields: [instanceId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("messages")
 }
 
 model DocumentEmbedding {
