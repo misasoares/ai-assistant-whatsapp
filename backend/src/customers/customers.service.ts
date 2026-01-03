@@ -42,6 +42,7 @@ export class CustomersService {
       where: { id },
       include: {
         instances: {
+          where: { deletedAt: null },
           orderBy: { createdAt: 'desc' },
         },
       },
