@@ -8,52 +8,65 @@ datasource db {
   extensions = [vector]
 }
 
-model Customer {
-  id    String @id @default(uuid())
-  name  String // Nome da empresa ou do cliente
-  email String @unique
-  plan  String @default("FREE") // Para controle de limites de instâncias
+enum Plan {
+  FREE
+  PREMIUM
+  ENTERPRISE
+}
 
-  // Relacionamento: Um cliente tem muitas instâncias
+enum InstanceStatus {
+  CLOSE
+  OPEN
+  CONNECTING
+  CONNECTED
+  DISCONNECTED
+  DELETED
+}
+
+model Customer {
+  id    String  @id @default(uuid())
+  name  String
+  email String? @unique
+  phone String?
+  plan  Plan    @default(FREE)
+
   instances Instance[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("customers")
 }
 
 model Instance {
-  id   String @id @default(uuid())
-  name String @unique // Nome identificador na Evolution (ex: "cliente1-vendas")
-
-  // Relacionamento com Customer
-  customerId String
+  id         String   @id @default(uuid())
+  name       String   @unique
+  customerId String   @map("customer_id")
   customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
 
-  evolutionKey String?
-  status       String  @default("DISCONNECTED")
+  evolutionKey String?        @map("evolution_key")
+  status       InstanceStatus @default(DISCONNECTED)
 
-  // Relacionamento com Dados Vetorizados (Conhecimento da IA desta instância)
   embeddings DocumentEmbedding[]
 
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
 
   @@map("instances")
 }
 
 model DocumentEmbedding {
-  id         String                       @id @default(uuid())
-  instanceId String
-  instance   Instance                     @relation(fields: [instanceId], references: [id], onDelete: Cascade)
-  content    String
-  vector     Unsupported("vector(1536)")?
-  metadata   Json?
+  id         String   @id @default(uuid())
+  instanceId String   @map("instance_id")
+  instance   Instance @relation(fields: [instanceId], references: [id], onDelete: Cascade)
 
-  createdAt DateTime  @default(now())
-  deletedAt DateTime?
+  content  String
+  vector   Unsupported("vector(1536)")?
+  metadata Json?
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  deletedAt DateTime? @map("deleted_at")
 
   @@map("document_embeddings")
 }
