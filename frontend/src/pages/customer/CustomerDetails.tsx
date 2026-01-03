@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../../api/axios';
-import { ArrowLeft, Plus, Mail } from 'lucide-react';
+import { ArrowLeft, Plus, Mail, Phone } from 'lucide-react';
 import InstanceCard from './components/InstanceCard';
 import CreateInstanceModal from './components/CreateInstanceModal';
 import { Button } from "@/components/ui/button"
@@ -16,7 +16,8 @@ interface Instance {
 interface Customer {
   id: string;
   name: string;
-  email: string;
+  email?: string;
+  phone?: string;
   instances: Instance[];
 }
 
@@ -65,9 +66,19 @@ export default function CustomerDetails() {
           </Link>
           <div>
             <h1 className="text-3xl font-bold tracking-tight">{customer.name}</h1>
-            <div className="flex items-center text-muted-foreground mt-1">
-              <Mail className="h-4 w-4 mr-2" />
-              {customer.email}
+            <div className="flex flex-col text-muted-foreground mt-1 gap-1">
+              {customer.email && (
+                <div className="flex items-center">
+                  <Mail className="h-4 w-4 mr-2" />
+                  {customer.email}
+                </div>
+              )}
+              {customer.phone && (
+                <div className="flex items-center">
+                  <Phone className="h-4 w-4 mr-2" />
+                  {customer.phone}
+                </div>
+              )}
             </div>
           </div>
         </div>

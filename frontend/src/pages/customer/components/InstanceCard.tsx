@@ -27,7 +27,7 @@ interface InstanceCardProps {
 }
 
 export default function InstanceCard({ instance, onDelete }: InstanceCardProps) {
-  const isConnected = instance.status === 'open' || instance.status === 'connected';
+  const isConnected = instance.status === 'OPEN' || instance.status === 'CONNECTED';
   
   return (
     <Card className={`transition-all duration-200 hover:shadow-md ${isConnected ? 'border-l-4 border-l-green-500' : 'border-l-4 border-l-red-500'}`}>

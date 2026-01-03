@@ -26,7 +26,8 @@ import {
 interface Customer {
   id: string;
   name: string;
-  email: string;
+  email?: string;
+  phone?: string;
   _count: {
     instances: number;
   };
@@ -40,6 +41,7 @@ export default function CustomerList() {
   // Form state
   const [newCustomerName, setNewCustomerName] = useState('');
   const [newCustomerEmail, setNewCustomerEmail] = useState('');
+  const [newCustomerPhone, setNewCustomerPhone] = useState('');
   const [creating, setCreating] = useState(false);
 
   const fetchCustomers = async () => {
@@ -63,11 +65,13 @@ export default function CustomerList() {
     try {
       await api.post('/customers', {
         name: newCustomerName,
-        email: newCustomerEmail,
+        email: newCustomerEmail || undefined,
+        phone: newCustomerPhone || undefined,
       });
       setOpen(false);
       setNewCustomerName('');
       setNewCustomerEmail('');
+      setNewCustomerPhone('');
       fetchCustomers();
     } catch (error) {
       console.error('Failed to create customer', error);
@@ -125,7 +129,20 @@ export default function CustomerList() {
                       value={newCustomerEmail}
                       onChange={(e) => setNewCustomerEmail(e.target.value)}
                       className="col-span-3"
-                      required
+                      placeholder="Optional"
+                    />
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="phone" className="text-right">
+                      Phone
+                    </Label>
+                    <Input
+                      id="phone"
+                      type="tel"
+                      value={newCustomerPhone}
+                      onChange={(e) => setNewCustomerPhone(e.target.value)}
+                      className="col-span-3"
+                      placeholder="Optional"
                     />
                   </div>
                 </div>
