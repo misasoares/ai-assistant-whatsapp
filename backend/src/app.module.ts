@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { EvolutionModule } from './evolution/evolution.module';
+import { CustomersModule } from './customers/customers.module';
 import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
@@ -10,8 +11,9 @@ import { PrismaModule } from './prisma/prisma.module';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    EvolutionModule, 
-    PrismaModule
+    EvolutionModule,
+    PrismaModule,
+    CustomersModule
   ],
   controllers: [AppController],
   providers: [AppService],
